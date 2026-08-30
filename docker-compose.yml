@@ -1,0 +1,20 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_DIR: frontend
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_DIR: Admin
+    ports:
+      - "3001:80"
+    restart: unless-stopped
