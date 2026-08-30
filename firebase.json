@@ -1,0 +1,9 @@
+{
+  "firestore": {
+    "database": "hunar-tribe",
+    "rules": "firebase/firestore.rules"
+  },
+  "storage": {
+    "rules": "firebase/storage.rules"
+  }
+}

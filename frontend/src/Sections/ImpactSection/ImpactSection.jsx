@@ -2,76 +2,47 @@ import React from "react";
 import Button from "../../Components/Button/Button";
 import ImpactCard from "./ImpactCard";
 
-import icon1 from "./Assets/tyre.svg";
-import icon2 from "./Assets/students.svg";
-import icon3 from "./Assets/scrap.svg";
-import icon4 from "./Assets/students.svg";
-import icon5 from "./Assets/plastic.svg";
-import icon6 from "./Assets/ecployee.svg";
+import { useSection, useSiteSettings } from "../../cms/SiteContent";
+import { resolveImage } from "../../cms/assets";
 
 const ImpactSection = () => {
-  const numbers = [
-    "2,65,000+",
-    "5,000+",
-    "70,000+",
-    "5,000+",
-    "15,000+",
-    "30+",
-  ];
-  const quantity = [
-    "Kgs",
-    "Students",
-    "Kgs",
-    "Students",
-    "Kgs",
-    "Tribal Youth",
-  ];
-  const highlight = [
-    "Scrap",
-    "Educational",
-    "Scrap",
-    "Educational",
-    "Plastics",
-    "Skilled",
-  ];
-  const description = [
-    "Tires Upcycled",
-    "Activities",
-    "Iron Upcycled",
-    "Activities",
-    "Upcycled",
-    "& Empowered",
-  ];
-  const icons = [icon1, icon2, icon3, icon4, icon5, icon6];
+  const impact = useSection("impact");
+  const settings = useSiteSettings();
+
+  const joinTarget = settings.joinUsUrl || "contact";
 
   return (
     <>
-      <section className=" impact flex flex-col justify-between gap-8 items-center md:px-[8%] lg:px-[10%] px-[16px] w-full mt-10 mb-10">
+      <section
+        id="impact"
+        className=" impact flex flex-col justify-between gap-8 items-center md:px-[8%] lg:px-[10%] px-[16px] w-full mt-10 mb-10">
         <div className="leftcontent w-full flex justify-between items-end gap-4">
           <div className="text flex flex-col lg:justify-start justify-center items-center lg:items-start gap-2">
             <h1 className="text-[36px] lg:text-[48px] tracking-tight text-textprimary font-medium leading-[120%]">
-              Our&nbsp;
-              <span className="font-bold text-accent1">Impact</span>
+              {impact.headingLead}&nbsp;
+              <span className="font-bold text-accent1">
+                {impact.headingHighlight}
+              </span>
             </h1>
             <p className="description text-textsecondary  text-center md:text-start">
-              Transforming Lives and Communities Through Innovation
+              {impact.subtitle}
             </p>
           </div>
           <div className="mt-2 sm:mt-0 hidden lg:block">
-            <Button primary title="Join Us" />
+            <Button primary title={impact.joinLabel} link={joinTarget} />
           </div>
         </div>
 
         {/* Grid Section */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[20px] w-full">
-          {numbers.map((num, index) => (
+          {impact.items.map((item, index) => (
             <ImpactCard
               key={index}
-              icon={icons[index]}
-              number={num}
-              quantity={quantity[index]}
-              highlight={highlight[index]}
-              description={description[index]}
+              icon={resolveImage(item)}
+              number={item.number}
+              quantity={item.unit}
+              highlight={item.highlight}
+              description={item.description}
             />
           ))}
         </div>

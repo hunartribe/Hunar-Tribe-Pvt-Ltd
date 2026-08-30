@@ -1,7 +1,10 @@
 import React from "react";
 import Button from "../Components/Button/Button";
+import { useSiteSettings } from "../cms/SiteContent";
 
-function PageNotFound404({description,img}) {
+function PageNotFound404({ description, img }) {
+  const settings = useSiteSettings();
+
   return (
     <>
       <section className="pagenotfound flex flex-col md:flex-row justify-center gap-8 bg-white items-center md:px-[8%] py-[4%] lg:px-[10%] px-[16px] w-full mt-[10%]">
@@ -15,8 +18,8 @@ function PageNotFound404({description,img}) {
             </p>
           </div>
           <div className="buttons flex justify-center items-center gap-4">
-            <Button title="Back To Home"></Button>
-            <Button primary title="Shop Now"></Button>
+            <Button title="Back To Home" link="/" />
+            <Button primary title="Shop Now" link={settings.shopUrl} />
           </div>
         </div>
 

@@ -1,16 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import Advertisment from "./Components/Advertisment";
 import Button from "../../Components/Button/Button";
+import SocialLinks from "../../Components/SocialLinks/SocialLinks";
 import logo from "/Logo.svg";
 import NavButtons from "./Components/NavButtons";
-import { useNavigate } from "react-router-dom";
-import {
-  BiLogoWhatsapp,
-  BiLogoLinkedin,
-  BiLogoInstagram,
-} from "react-icons/bi";
+import { Link } from "react-router-dom";
+import { useSiteSettings } from "../../cms/SiteContent";
+
 const NavBar = () => {
-  const navigate = useNavigate();
+  const settings = useSiteSettings();
   const [show, setShow] = useState(true);
   const lastScrollY = useRef(window.scrollY);
 
@@ -44,57 +42,27 @@ const NavBar = () => {
     >
       <Advertisment />
       <section className="navbar flex justify-between items-center md:px-[8%] lg:px-[10%] px-[16px] w-full border-b border-[#6f746fce] bg-white cursor-pointer">
-        <a
-          href="/"
+        <Link
+          to="/"
           className="logo flex justify-center items-center cursor-pointer w-fit py-2"
         >
           <img src={logo} alt="logo" className="w-14 md:w-16" />
 
           <div className="text leading-tight flex justify-center items-center mt-3">
             <p className="font-bold text-accent2 text-[24px] md:text-[32px] tracking-tighter">
-              Hunar
+              {settings.brandFirst}
             </p>
             &nbsp;
             <p className="font-bold text-accent1 text-[24px] md:text-[32px] tracking-tighter">
-              Tribe
+              {settings.brandSecond}
             </p>
           </div>
-        </a>
+        </Link>
 
         <div className="buttonandmeta flex justify-between items-center gap-4">
-          <div className="hidden md:flex justify-center gap-4 text-accent2 text-[20px] sm:text-[24px]">
-            <a
-              target="_blank"
-              href="https://wa.me/918000425929"
-              className="hover:text-accent1"
-              rel="noopener noreferrer"
-            >
-              <BiLogoWhatsapp size={24} />
-            </a>
-
-            <a
-              target="_blank"
-              href="https://www.linkedin.com/company/hunar-tribe/"
-              className="hover:text-accent1"
-              rel="noopener noreferrer"
-            >
-              <BiLogoLinkedin size={24} />
-            </a>
-
-            <a
-              target="_blank"
-              href="https://www.instagram.com/hunar_tribe_upcycles/"
-              className="hover:text-accent1"
-              rel="noopener noreferrer"
-            >
-              <BiLogoInstagram size={24} />
-            </a>
-          </div>
+          <SocialLinks className="hidden md:flex text-accent2 text-[20px] sm:text-[24px]" />
           <div className="scale-[0.9]">
-            <Button
-              title={"Shop Now"}
-              link={"https://hunartribe.mini.site/?path=%2F"}
-            />
+            <Button title={"Shop Now"} link={settings.shopUrl} />
           </div>
         </div>
       </section>

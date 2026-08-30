@@ -1,0 +1,3 @@
+# Local environment overrides used by docker compose build args
+.env
+.env.local

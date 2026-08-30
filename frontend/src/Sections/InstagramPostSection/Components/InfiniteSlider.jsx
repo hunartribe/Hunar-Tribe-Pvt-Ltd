@@ -2,16 +2,7 @@ import React, { useState, useEffect } from "react";
 import Slider from "react-infinite-logo-slider";
 import InstagramPost from "./InstagramPost";
 
-const postid = [
-  "DHNuVH5Bhb2",
-  "DHKvCZZIlD2",
-  "DGXQiuxSSmc",
-  "DF1uX0vyIDW",
-  "DFuEfrBScyU",
-  "DDsMccAhpGg",
-];
-
-const InfiniteSlider = () => {
+const InfiniteSlider = ({ posts = [] }) => {
   const [sliderWidth, setSliderWidth] = useState("100px");
 
   useEffect(() => {
@@ -19,7 +10,7 @@ const InfiniteSlider = () => {
       if (window.innerWidth >= 1024) {
         setSliderWidth("400px"); // lg screens
       } else if (window.innerWidth >= 600) {
-        setSliderWidth("320px"); // lg screens
+        setSliderWidth("320px"); // md screens
       } else {
         setSliderWidth("200px"); // sm screens
       }
@@ -34,9 +25,9 @@ const InfiniteSlider = () => {
   return (
     <article className="slider w-full gap-2 p-6 bg-white rounded-[12px]">
       <Slider width={sliderWidth} duration={40} pauseOnHover={true}>
-        {postid.map((post, index) => (
-          <Slider.Slide key={index}>
-            <InstagramPost postid={post}></InstagramPost>
+        {posts.map((post, index) => (
+          <Slider.Slide key={`${post.shortcode}-${index}`}>
+            <InstagramPost postid={post.shortcode}></InstagramPost>
           </Slider.Slide>
         ))}
       </Slider>

@@ -1,0 +1,34 @@
+rules_version = '2';
+
+// Deploy with:  firebase deploy --only firestore:rules
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Website content: anyone may read it, only a signed-in admin may change it.
+    match /siteContent/{section} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Contact form enquiries: visitors may only submit, never read others'.
+    match /leads/{lead} {
+      allow create: if isValidLead(request.resource.data);
+      allow read, update, delete: if request.auth != null;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+
+  function isValidLead(data) {
+    return data.keys().hasOnly(
+             ['fullName', 'mobile', 'email', 'message', 'status', 'createdAt'])
+           && data.fullName is string && data.fullName.size() > 0
+           && data.fullName.size() <= 120
+           && data.mobile is string && data.mobile.size() <= 20
+           && data.email is string && data.email.size() <= 200
+           && data.message is string && data.message.size() <= 1000
+           && data.status == 'new';
+  }
+}

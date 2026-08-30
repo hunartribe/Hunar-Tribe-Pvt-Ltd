@@ -1,53 +1,9 @@
 import { useState } from "react";
 import { FaChevronLeft } from "react-icons/fa";
 
-import {
-  FaLightbulb,
-  FaSeedling,
-  FaTree,
-  FaPencilAlt,
-  FaKey,
-  FaCouch,
-  FaIndustry,
-  FaFeatherAlt,
-  FaPalette,
-  FaHome,
-  FaShapes,
-} from "react-icons/fa";
+import { categoryIcon } from "../../../cms/icons";
 
-const ProductDropdown = ({
-  selected,
-  setSelected,
-  iconselected,
-  seticonselected,
-}) => {
-  const categoryIcons = {
-    "Art Mini Collection": <FaPalette className="text-accent2" />,
-    "Bird Collection": <FaFeatherAlt className="text-accent2" />,
-    "Black and White Collection": <FaShapes className="text-accent2" />,
-    "Boho Collection": <FaSeedling className="text-accent2" />,
-    "Feminine Collection": <FaPalette className="text-accent2" />,
-    "Hanging Pot Collection": <FaTree className="text-accent2" />,
-    "Trible Collection": <FaIndustry className="text-accent2" />,
-    "Whispering Petals Collection": <FaFeatherAlt className="text-accent2" />,
-    Lamps: <FaLightbulb className="text-accent2" />,
-    "Home Decor": <FaHome className="text-accent2" />,
-    Keychain: <FaKey className="text-accent2" />,
-  };
-
-  const categories = [
-    "Art Mini Collection",
-    "Bird Collection",
-    "Black and White Collection",
-    "Boho Collection",
-    "Feminine Collection",
-    "Hanging Pot Collection",
-    "Tribal Collection",
-    "Whispering Petals Collection",
-    "Lamps",
-    "Home Decor",
-  ];
-
+const ProductDropdown = ({ categories, selected, setSelected }) => {
   const [isOpen, setIsOpen] = useState(false); // State for dropdown visibility
 
   return (
@@ -69,22 +25,23 @@ const ProductDropdown = ({
         <ul className="absolute left-0 mt-2 w-60 bg-white shadow-lg rounded-[12px] border-2 border-[#6F746F4D] py-4">
           {categories.map((category) => (
             <li
-              key={category}
+              key={category.name}
               onClick={() => {
-                setSelected(category);
-                seticonselected(categoryIcons[category]); // ✅ Update icon based on selected category
+                setSelected(category.name);
                 setIsOpen(false);
               }}
               className={`px-4 py-2 cursor-pointer transition-all flex items-center gap-2 ${
-                selected === category
+                selected === category.name
                   ? "text-accent1 font-bold"
                   : "hover:text-textprimary hover:font-semibold"
               }`}
             >
-              {selected === category && (
+              {selected === category.name ? (
                 <div className="w-2 h-2 rounded-full bg-accent1"></div>
+              ) : (
+                categoryIcon(category.iconKey)
               )}
-              {category}
+              {category.name}
             </li>
           ))}
         </ul>

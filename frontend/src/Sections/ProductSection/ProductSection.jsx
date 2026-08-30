@@ -1,99 +1,68 @@
 import React, { useEffect, useState } from "react";
-import { getAllImageURLs } from "../../Utility/ImageFetch";
+import { listCategoryImages } from "../../Utility/ImageFetch";
 
 import Button from "../../Components/Button/Button";
 import ProductCard from "./Components/ProductCard";
-
 import ProductDropdown from "./Components/ProductDropdown";
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-import {
-  FaLightbulb,
-  FaSeedling,
-  FaTree,
-  FaPencilAlt,
-  FaKey,
-  FaCouch,
-  FaIndustry,
-  FaFeatherAlt,
-  FaPalette,
-  FaHome,
-  FaShapes,
-} from "react-icons/fa";
+import { useSection, useSiteSettings } from "../../cms/SiteContent";
+import { categoryIcon } from "../../cms/icons";
 
-const categoryIcons = {
-  "Art Mini Collection": <FaPalette className="text-accent2" />,
-  "Bird Collection": <FaFeatherAlt className="text-accent2" />,
-  "Black and White Collection": <FaShapes className="text-accent2" />,
-  "Boho Collection": <FaSeedling className="text-accent2" />,
-  "Feminine Collection": <FaPalette className="text-accent2" />,
-  "Hanging Pot Collection": <FaTree className="text-accent2" />,
-  "Tribal Collection": <FaIndustry className="text-accent2" />,
-  "Whispering Petals Collection": <FaFeatherAlt className="text-accent2" />,
-  Lamps: <FaLightbulb className="text-accent2" />,
-  "Home Decor": <FaHome className="text-accent2" />,
-  Keychain: <FaKey className="text-accent2" />,
-};
-
-const categories = [
-  { name: "Art Mini Collection", foldername: "art mini collection" },
-  { name: "Bird Collection", foldername: "bird collection" },
-  {
-    name: "Black and White Collection",
-    foldername: "black and white collection",
-  },
-  { name: "Boho Collection", foldername: "boho collection" },
-  { name: "Feminine Collection", foldername: "girls collection" },
-  { name: "Hanging Pot Collection", foldername: "hanging pot collection" },
-  { name: "Tribal Collection", foldername: "tribal collection" },
-  {
-    name: "Whispering Petals Collection",
-    foldername: "whispering petals",
-  },
-  { name: "Lamps", foldername: "lamp product" },
-  { name: "Home Decor", foldername: "home decor article" },
-];
+const CARDS_SHOWN = 4;
 
 const ProductSection = () => {
+  const products = useSection("categories");
+  const settings = useSiteSettings();
+
+  const categories = products.items;
+
   const [images, setImages] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedIcon, setSelectedIcon] = useState(<FaTree />);
   const [loading, setLoading] = useState(false);
 
-  const fetchImagesForCategory = async (category) => {
-    setLoading(true);
-    setImages([]);
+  const category = categories.find((cat) => cat.name === selectedCategory);
+
+  // Land on a different collection each visit, once categories are known.
+  useEffect(() => {
+    if (categories.length === 0) return;
+    setSelectedCategory((prev) => {
+      if (prev && categories.some((cat) => cat.name === prev)) return prev;
+      return categories[Math.floor(Math.random() * categories.length)].name;
+    });
+  }, [categories]);
+
+  useEffect(() => {
     if (!category) return;
+    let active = true;
 
-    setSelectedIcon(categoryIcons[category.name] || <FaTree />);
-
-    try {
-      const urls = await getAllImageURLs(category.foldername);
-      if (urls && urls.length > 0) {
-        const selectedImages = urls.sort(() => 0.5 - Math.random()).slice(0, 4);
-        setImages(selectedImages);
+    const load = async () => {
+      setLoading(true);
+      setImages([]);
+      try {
+        const files = await listCategoryImages(category.folder);
+        if (!active) return;
+        setImages(
+          [...files].sort(() => 0.5 - Math.random()).slice(0, CARDS_SHOWN)
+        );
+      } catch (err) {
+        console.error("Error fetching images", err);
+      } finally {
+        if (active) setLoading(false);
       }
-    } catch (err) {
-      console.error("Error fetching images", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * categories.length);
-    const randomCategory = categories[randomIndex];
-    setSelectedCategory(randomCategory.name); // Triggers the second useEffect
-  }, []);
+    load();
+    return () => {
+      active = false;
+    };
+  }, [category?.folder]);
 
-  useEffect(() => {
-    const category = categories.find((cat) => cat.name === selectedCategory);
-    if (category) {
-      fetchImagesForCategory(category);
-    }
-  }, [selectedCategory]);
+  // Per-image title/price/badge an admin has set for this collection.
+  const metaFor = (fileName) =>
+    (category?.products || []).find((entry) => entry.file === fileName) || {};
 
   return (
     <>
@@ -103,32 +72,29 @@ const ProductSection = () => {
       >
         <div className="text flex flex-col md:flex-row justify-between items-start md:items-end w-full gap-2">
           <h1 className="text-[36px] lg:text-[48px] tracking-tighter text-textprimary font-medium leading-[120%]">
-            Check out our&nbsp;
+            {products.headingLead}&nbsp;
             <br />
-            <span className="font-bold text-accent1">Products</span>
+            <span className="font-bold text-accent1">
+              {products.headingHighlight}
+            </span>
           </h1>
           <div className="buttonrow flex self-center justify-center items-center gap-4">
             <ProductDropdown
+              categories={categories}
               selected={selectedCategory}
               setSelected={setSelectedCategory}
-              iconselected={selectedIcon}
-              seticonselected={setSelectedIcon}
             />
             <Button
-              link={"https://hunartribe.mini.site/?path=%2F"}
+              link={settings.shopUrl}
               primary
-              title="Browse All"
+              title={products.browseAllLabel}
             ></Button>
           </div>
         </div>
 
-        {/* <div className="smallbanner w-full bg-accent1 h-[64px]">
-kasdk
-        </div> */}
-
         <div className="banner flex justify-baseline items-baseline gap-4">
           <div className="icon w-12 h-12 bg-accent3 rounded-full flex justify-center items-center">
-            {selectedIcon}
+            {categoryIcon(category?.iconKey)}
           </div>
           <p className="title text-accent2 font-medium text-[20px] tracking-tight">
             {selectedCategory}
@@ -137,7 +103,7 @@ kasdk
 
         <div className="productcardsection grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 w-full h-fit gap-4">
           {loading
-            ? Array(4)
+            ? Array(CARDS_SHOWN)
                 .fill(0)
                 .map((_, index) => (
                   <div key={index} className="p-2">
@@ -146,7 +112,20 @@ kasdk
                     <Skeleton height={20} width="60%" />
                   </div>
                 ))
-            : images.map((img, index) => <ProductCard key={index} img={img} />)}
+            : images.map((image) => {
+                const meta = metaFor(image.name);
+                return (
+                  <ProductCard
+                    key={image.fullPath}
+                    img={image.url}
+                    title={meta.title}
+                    price={meta.price}
+                    badge={meta.badge}
+                    categoryName={selectedCategory}
+                    shopUrl={meta.url || category?.shopUrl || settings.shopUrl}
+                  />
+                );
+              })}
         </div>
       </section>
     </>

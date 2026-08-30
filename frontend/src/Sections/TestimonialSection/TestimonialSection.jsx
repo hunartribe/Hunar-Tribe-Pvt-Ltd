@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "../../Components/Button/Button";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -7,54 +7,44 @@ import flower from "./Assets/flower.webp";
 import hflower from "./Assets/flower2.webp";
 import TestimonialPerson from "./TestimonialPerson";
 
-const comments = [
-  "Top-quality pots, vibrant and shiny, the best I've ever purchased!",
-  "Absolutely love the pots! They bring life to my home very bright.",
-  "Excellent customer service and beautiful products. Highly recommended!",
-];
-const testimonials = [
-  {
-    comment:
-      "Top-quality pots, vibrant and shiny, the best I've ever purchased!",
-    name: "Daksh",
-    place: "Rajasthan",
-  },
-  {
-    comment:
-      "Absolutely love the pots! They bring life to my home very bright.",
-    name: "Hari",
-    place: "Karnataka",
-  },
-  {
-    comment:
-      "Excellent customer service and beautiful products. Highly recommended!",
-    name: "Vishnu",
-    place: "Haryana",
-  },
-];
+import { useSection, useSiteSettings } from "../../cms/SiteContent";
 
 const TestimonialSection = () => {
+  const testimonialsSection = useSection("testimonials");
+  const settings = useSiteSettings();
+
+  const testimonials = testimonialsSection.items;
+
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
 
   const handleNext = () => {
     setDirection(1);
-    setIndex((prev) => (prev + 1) % comments.length);
+    setIndex((prev) => (prev + 1) % testimonials.length);
   };
 
   const handlePrev = () => {
     setDirection(-1);
-    setIndex((prev) => (prev - 1 + comments.length) % comments.length);
+    setIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
 
-  // 🔁 Auto change every 3 seconds
   useEffect(() => {
+    setIndex((prev) => (prev < testimonials.length ? prev : 0));
+  }, [testimonials.length]);
+
+  // Auto change every 5 seconds
+  useEffect(() => {
+    if (testimonials.length <= 1) return;
     const interval = setInterval(() => {
-      handleNext();
+      setDirection(1);
+      setIndex((prev) => (prev + 1) % testimonials.length);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [testimonials.length]);
+
+  const testimonial = testimonials[index] || testimonials[0];
+  if (!testimonial) return null;
 
   return (
     <section
@@ -65,30 +55,36 @@ const TestimonialSection = () => {
       <div className="leftcontent hidden md:flex w-full md:w-[45%] flex-col justify-start items-start gap-8">
         <div className="text flex flex-col gap-2">
           <h1 className="text-[32px] sm:text-[36px] tracking-tighter md:text-[42px] lg:text-[48px]  text-textprimary font-medium leading-[120%]">
-            What Our
+            {testimonialsSection.headingLead}
             <br />
-            <span className="font-bold text-accent1">Customer</span> Tell
+            <span className="font-bold text-accent1">
+              {testimonialsSection.headingHighlight}
+            </span>{" "}
+            {testimonialsSection.headingTail}
           </h1>
           <p className="text-textsecondary text-sm sm:text-base leading-[140%]">
-            We take pride in delivering quality and satisfaction. Here's what
-            our amazing customers have to say about their experience with us.
+            {testimonialsSection.subtitle}
           </p>
         </div>
 
         <div className="allbuttons flex flex-col sm:flex-row gap-4 w-full sm:items-center">
-          <Button link="https://hunartribe.mini.site/?path=%2F" primary>
-            Shop Now
-          </Button>
+          <Button
+            link={settings.shopUrl}
+            title={testimonialsSection.shopLabel}
+            primary
+          />
 
           <div className="buttonsrow flex gap-4 mt-2 sm:mt-0">
             <button
               onClick={handlePrev}
+              aria-label="Previous testimonial"
               className="chevrons cursor-pointer w-12 h-12 flex justify-center items-center bg-background border border-accent2 rounded-full hover:scale-110 hover:bg-[#3f12120e] transition"
             >
               <FaChevronLeft size={16} className="text-accent2" />
             </button>
             <button
               onClick={handleNext}
+              aria-label="Next testimonial"
               className="chevrons cursor-pointer w-12 h-12 flex justify-center items-center bg-background border border-accent2 rounded-full hover:scale-110 hover:bg-[#3f12120e] transition"
             >
               <FaChevronRight size={16} className="text-accent2" />
@@ -109,12 +105,13 @@ const TestimonialSection = () => {
             className="flex flex-col justify-center items-center gap-8"
           >
             <p className="text-center tracking-tighter text-[20px] sm:text-[24px] md:text-[28px] lg:text-[30px] font-medium text-textprimary leading-[130%] max-w-[20ch]">
-              “ {testimonials[index].comment} ”
+              &ldquo; {testimonial.quote} &rdquo;
             </p>
 
             <TestimonialPerson
-              name={testimonials[index].name}
-              place={testimonials[index].place}
+              name={testimonial.name}
+              place={testimonial.place}
+              photo={testimonial.photo}
             />
           </motion.div>
         </AnimatePresence>

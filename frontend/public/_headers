@@ -1,0 +1,10 @@
+# Asset filenames are content-hashed by Vite, so they can be cached forever.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# index.html must not be cached, or visitors keep running the previous
+# deploy's JavaScript after a release.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate

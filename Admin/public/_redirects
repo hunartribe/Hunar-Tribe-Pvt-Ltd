@@ -1,0 +1,4 @@
+# Cloudflare Pages SPA fallback.
+# React Router owns /login, /section/:key and /leads on the client. Without
+# this, refreshing or deep-linking one of those returns a Pages 404.
+/*    /index.html   200

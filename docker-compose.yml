@@ -1,3 +1,6 @@
+# VITE_* values are read from a .env file next to this one (or the shell) and
+# baked into each bundle at build time. Leave them unset to use the defaults
+# compiled into the apps. Rebuild after changing them: docker compose build.
 services:
   frontend:
     build:
@@ -5,6 +8,14 @@ services:
       dockerfile: Dockerfile
       args:
         APP_DIR: frontend
+        VITE_FIREBASE_API_KEY: ${VITE_FIREBASE_API_KEY:-}
+        VITE_FIREBASE_AUTH_DOMAIN: ${VITE_FIREBASE_AUTH_DOMAIN:-}
+        VITE_FIREBASE_PROJECT_ID: ${VITE_FIREBASE_PROJECT_ID:-}
+        VITE_FIREBASE_STORAGE_BUCKET: ${VITE_FIREBASE_STORAGE_BUCKET:-}
+        VITE_FIREBASE_MESSAGING_SENDER_ID: ${VITE_FIREBASE_MESSAGING_SENDER_ID:-}
+        VITE_FIREBASE_APP_ID: ${VITE_FIREBASE_APP_ID:-}
+        VITE_FIREBASE_DATABASE_ID: ${VITE_FIREBASE_DATABASE_ID:-}
+        VITE_FIREBASE_MEASUREMENT_ID: ${VITE_FIREBASE_MEASUREMENT_ID:-}
     ports:
       - "3000:80"
     restart: unless-stopped
@@ -15,6 +26,14 @@ services:
       dockerfile: Dockerfile
       args:
         APP_DIR: Admin
+        VITE_FIREBASE_API_KEY: ${VITE_FIREBASE_API_KEY:-}
+        VITE_FIREBASE_AUTH_DOMAIN: ${VITE_FIREBASE_AUTH_DOMAIN:-}
+        VITE_FIREBASE_PROJECT_ID: ${VITE_FIREBASE_PROJECT_ID:-}
+        VITE_FIREBASE_STORAGE_BUCKET: ${VITE_FIREBASE_STORAGE_BUCKET:-}
+        VITE_FIREBASE_MESSAGING_SENDER_ID: ${VITE_FIREBASE_MESSAGING_SENDER_ID:-}
+        VITE_FIREBASE_APP_ID: ${VITE_FIREBASE_APP_ID:-}
+        VITE_FIREBASE_DATABASE_ID: ${VITE_FIREBASE_DATABASE_ID:-}
+        VITE_SITE_URL: ${VITE_SITE_URL:-http://localhost:3000}
     ports:
       - "3001:80"
     restart: unless-stopped
